@@ -58,8 +58,8 @@ class TestArgMax(unittest.TestCase):
         assert argmax(test_array) in [5, 7], "Check your argmax implementation returns the index of the largest value"
         test_array = [np.inf, -np.inf, 0.5, 0.5, 0.5]
         assert argmax(test_array) == 0, "Check your argmax implementation returns the index of the largest value"
-        test_array = [-1.71669531, -1.69002165, -1.84892   , -1.71591288]
-        assert argmax(test_array) == 1, "Check your argmax implementation returns the index of the largest value"
+        test_array = [-1.71669531, -1.69002165, 0   , -1.71591288]
+        assert argmax(test_array) == 2, "Check your argmax implementation returns the index of the largest value"
 
 class TestStateRepFunc(unittest.TestCase):
     def test_state_rep(self):
