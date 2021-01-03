@@ -7,35 +7,28 @@ class MCAgent(Agent):
     """
     Monte Carlo agent learns from samples without any explicit model.
     Computes value functions by averaging sample returns.
+    The policy is an implicit epsilon greedy policy on the current value function.
     """
-    def __init__(self, num_states, num_actions, get_state_rep=None, discount_rate=1.0, epsilon=0.9):
+    def __init__(self, num_states, num_actions, get_state_rep=None, epsilon=0.9, discount_rate=1.0):
         self.num_states = num_states
         self.num_actions = num_actions
-        self.discount_rate = discount_rate
-        self.epsilon = epsilon
-        self.value_fn = np.zeros((self.num_states, self.num_actions))
-        self.policy = []
         self.get_state_rep = get_state_rep
-        for _ in range(self.num_states):
-            p_s = [0] * self.num_actions
-            random_action = random.randint(0, self.num_actions-1)
-            p_s[random_action] = 1
-            self.policy.append(p_s)
+        self.epsilon = epsilon
+        self.discount_rate = discount_rate
+        self.value_fn = np.zeros((self.num_states, self.num_actions))
+        self.counts = np.zeros((self.num_states, self.num_actions))
 
     def policy_evaluation(self, episodes):
         """
         Compute action value function using first-visit MC prediction for a given list of episodes.
         """
-        counts = np.zeros((self.num_states, self.num_actions))
         for episode in episodes:
             returns_eps, counts_eps = self.policy_evaluation_for_episode(episode)
             for state in range(self.num_states):
                 for action in range(self.num_actions):
-                    self.value_fn[state][action] = self.value_fn[state][action] * counts[state][action] + returns_eps[state][action]
-                    self.value_fn[state][action] /= (counts[state][action] + 1)
-            counts = np.add(counts, counts_eps)
-
-            
+                    self.value_fn[state][action] = self.value_fn[state][action] * self.counts[state][action] + returns_eps[state][action]
+                    self.value_fn[state][action] /= (self.counts[state][action] + 1)
+            self.counts = np.add(self.counts, counts_eps)       
 
     def policy_evaluation_for_episode(self, episode):
         """
@@ -61,7 +54,7 @@ class MCAgent(Agent):
         if self.get_state_rep:
             state = self.get_state_rep(state)
         debug and print("State", state)
-        debug and print(self.value_fn[state])
+        debug and print("Value function", self.value_fn[state])
         if (random.random() <= self.epsilon):
             action = argmax(self.value_fn[state])
         else:
