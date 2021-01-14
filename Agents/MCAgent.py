@@ -1,9 +1,8 @@
-from Agents.Agent import Agent
 import numpy as np
 import random
 from utils import argmax
 
-class MCAgent(Agent):
+class MCAgent():
     """
     Monte Carlo agent learns from samples without any explicit model.
     Computes value functions by averaging sample returns.
@@ -15,9 +14,16 @@ class MCAgent(Agent):
         self.get_state_rep = get_state_rep
         self.epsilon = epsilon
         self.discount_rate = discount_rate
+        self.seed = seed
+        self.set_seed()
         self.value_fn = np.zeros((self.num_states, self.num_actions))
         self.counts = np.zeros((self.num_states, self.num_actions))
-        random.seed(seed)
+
+    def set_seed(self, seed=None):
+        if seed:
+            self.seed = seed
+        random.seed(self.seed)
+        np.random.seed(self.seed)
 
     def policy_evaluation(self, episodes):
         """
@@ -57,7 +63,7 @@ class MCAgent(Agent):
         debug and print("State", state)
         debug and print("Value function", self.value_fn[state])
         if (random.random() <= self.epsilon):
-            action = argmax(self.value_fn[state])
+            action = argmax(self.value_fn[state], seed=self.seed)
         else:
             action = random.choice(range(self.num_actions))
         debug and print("Action", action)
