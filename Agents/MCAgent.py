@@ -8,7 +8,7 @@ class MCAgent():
     Computes value functions by averaging sample returns.
     The policy is an implicit epsilon greedy policy on the current value function.
     """
-    def __init__(self, num_states, num_actions, get_state_rep=None, epsilon=0.9, discount_rate=1.0, seed=42):
+    def __init__(self, num_states, num_actions, get_state_rep=None, epsilon=0.1, discount_rate=1.0, seed=42):
         self.num_states = num_states
         self.num_actions = num_actions
         self.get_state_rep = get_state_rep
@@ -62,7 +62,7 @@ class MCAgent():
             state = self.get_state_rep(state)
         debug and print("State", state)
         debug and print("Value function", self.value_fn[state])
-        if (random.random() <= self.epsilon):
+        if (random.random() >= self.epsilon):
             action = argmax(self.value_fn[state], seed=self.seed)
         else:
             action = random.choice(range(self.num_actions))
